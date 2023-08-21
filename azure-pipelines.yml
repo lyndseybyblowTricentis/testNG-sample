@@ -10,10 +10,28 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+#- #script: echo Hello, world!
+  #displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+#- script: |
+    #echo Add other tasks to build, test, and deploy your project.
+    #echo See https://aka.ms/yaml
+  #displayName: 'Run a multi-line script'
+
+- Test:
+  #script: echo Hello, world!
+  mvn clean test
+
+- Deploy:
+  $url = 'https://pulse-7.qtestnet.com/webhook/56abd3a0-1f0e-46c5-a402-747ec5a85105'
+  $content = (Get-Content $uploadResultsFile -Raw)
+  $bytes = [System.Text.Encoding]::ASCII.GetBytes($content)
+  $payload = [System.Convert]::ToBase64String($bytes)
+
+  $body = @{
+    'projectId' = '97083'
+    'testcycle' = '3665009'
+    'result' = 'C:\ProgramData\Jenkins\.jenkins\jobs\TestNG-Pulse\workspace\target\surefire-reports\*.xml'
+  }
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+  Invoke-RestMethod -Body $body -Method 'Post' -Uri $url

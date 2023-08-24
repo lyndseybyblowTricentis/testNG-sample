@@ -19,7 +19,7 @@ steps:
   #displayName: 'Run a multi-line script'
 
 - Test:
-  #script: echo Hello, world!
+  #script: echo Run the automation tests
   mvn clean test
 
 - Deploy:
